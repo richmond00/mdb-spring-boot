@@ -3,19 +3,48 @@ package com.example.mdb_spring_boot;
 import com.example.mdb_spring_boot.model.GroceryItem;
 import com.example.mdb_spring_boot.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import java.util.List;
 
 @SpringBootApplication
-public class MdbSpringBootApplication {
+@EnableMongoRepositories
+public class MdbSpringBootApplication implements CommandLineRunner {
 
 	@Autowired
 	ItemRepository groceryItemRepo;
 
 	public static void main(String[] args) {
+		System.out.println("start");
 		SpringApplication.run(MdbSpringBootApplication.class, args);
+	}
+
+	public void run(String... args) {
+		System.out.println("-----CREATE");
+		createGroceryItems();
+
+		System.out.println("\n----Show");
+		showAllGroceryItems();
+
+		System.out.println("\n----Get ");
+		getGroceryItemByName("Whole Wheat Biscuit");
+
+		System.out.println("\n----GET ITEMS");
+		getItemsByCategory("millets");
+		System.out.println("\n----UPDATE");
+
+		updateCategoryName("snacks");
+
+		System.out.println("\n----DELETE a GRO");
+		deleteGroceryItem("Kodo Millet");
+
+		System.out.println("\n---FINAL COUNT OF GROCETY ITEMS----");
+		findCountOfGroceryItems();
+
+		System.out.println("\n----Thank you");
 	}
 
 // CREATE
@@ -46,7 +75,7 @@ public class MdbSpringBootApplication {
 		System.out.println("Getting items for the category " + category);
 		List<GroceryItem> list = groceryItemRepo.findAll(category);
 
-		list.forEach(item -> System.out.println("Name: " + item.getName() + ", Quantity: " + item.getQuantity()));
+		list.forEach(item -> System.out.println("Name: " + item.getName() + ", Quantity: " + item.getItemQuantity()));
 	}
 
 	// 4. Get count of documents in the collection
@@ -54,6 +83,38 @@ public class MdbSpringBootApplication {
 		long count = groceryItemRepo.count();
 		System.out.println("Number of documents in the collection: " + count);
 	}
+
+	// Print details in readable form
+	public String getItemDetails(GroceryItem item) {
+		System.out.println("Item Name: " + item.getName() + ". \nQuantity: " + item.getItemQuantity() + ", \nItem Category: " + item.getCategory());
+		return "";
+	}
+
+	public void updateCategoryName(String category) {
+		// Change to this new value
+		String newCategory = "munchies";
+
+		// Find all the items with the category snacks
+		List<GroceryItem> list = groceryItemRepo.findAll(category);
+
+		list.forEach(item -> {
+			// Update the category in each document
+			item.setCategory(newCategory);
+		});
+
+		// Save all the items in database
+		List<GroceryItem> itemsUpdated = groceryItemRepo.saveAll(list);
+
+		if (itemsUpdated != null)
+			System.out.println("Successfully updated " + itemsUpdated.size() + " items.");
+	}
+
+// DELETE
+	public void deleteGroceryItem(String id) {
+		groceryItemRepo.deleteById(id);
+		System.out.println("Item with id " + id + " deleted...");
+	}
+
 
 
 
