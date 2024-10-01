@@ -1,6 +1,7 @@
 package com.example.mdb_spring_boot;
 
 import com.example.mdb_spring_boot.model.GroceryItem;
+import com.example.mdb_spring_boot.repository.CustomItemRepository;
 import com.example.mdb_spring_boot.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -16,6 +17,9 @@ public class MdbSpringBootApplication implements CommandLineRunner {
 
 	@Autowired
 	ItemRepository groceryItemRepo;
+
+	@Autowired
+	CustomItemRepository customRepo;
 
 	public static void main(String[] args) {
 		System.out.println("start");
@@ -34,9 +38,12 @@ public class MdbSpringBootApplication implements CommandLineRunner {
 
 		System.out.println("\n----GET ITEMS");
 		getItemsByCategory("millets");
-		System.out.println("\n----UPDATE");
 
+		System.out.println("\n----UPDATE");
 		updateCategoryName("snacks");
+
+		System.out.println("\n-----UPDATE QUANTITY OF A GROCERY ITEM-----\n");
+		updateItemQuantity("Bonny Cheese Crackers Plain", 10);
 
 		System.out.println("\n----DELETE a GRO");
 		deleteGroceryItem("Kodo Millet");
@@ -114,6 +121,13 @@ public class MdbSpringBootApplication implements CommandLineRunner {
 		groceryItemRepo.deleteById(id);
 		System.out.println("Item with id " + id + " deleted...");
 	}
+
+// UPDATE
+	public void updateItemQuantity(String name, float newQuantity) {
+		System.out.println("Updating quantity for " + name);
+		customRepo.updateItemQuantity(name, newQuantity);
+	}
+
 
 
 
